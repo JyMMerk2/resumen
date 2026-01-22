@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Documentos</title>
+    <style>
+        /* Estilos basicos para la pagina y los enlaces */
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+        }
+        .document-link {
+            display: none; /* Oculta todos los enlaces por defecto */
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+        .document-link.active {
+            display: block; /* Muestra solo el enlace con la clase 'active' */
+        }
+        .document-link a {
+            font-size: 18px;
+            text-decoration: none;
+            color: #0066cc;
+        }
+        #search-input {
+            padding: 10px;
+            width: 250px;
+            font-size: 16px;
+        }
+        #search-button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #no-results {
+            display: none;
+            margin-top: 10px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Buscador de Documentos</h1>
+    <input type="text" id="search-input" placeholder="Escribe el nombre (ej. Ahorro)">
+    <button id="search-button">Buscar</button>
+    <p id="no-results">No se encontró ningún documento con ese nombre.</p>
+
+    <div class="links-container">
+        <!-- Define tus documentos aquí usando un atributo data-keywords -->
+        <!-- El ID es solo para referencia interna del código -->
+        
+        <div id="DocAhorro" class="document-link" data-keywords="resumen,ahorro,presupuesto,familia">
+            <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSmB-jPw1LnINnl3-LqJwET8yWZBDdqkCTO9b7XTixQuuVW0uc245xPI6n05FIATtWDcx6XsM9SmaTV/pubhtml?gid=0&single=true" target="_blank">Documento de Resumen de Ahorros</a>
+        </div>
+
+        <!-- Puedes añadir más documentos con sus propias palabras clave aquí -->
+        <!--
+        <div id="OtroDoc" class="document-link" data-keywords="factura,enero,2025">
+             <a href="https://enlace.a.otro.documento.com" target="_blank">Factura de Enero 2025</a>
+        </div>
+        -->
+    </div>
+
+    <script>
+        // JavaScript seccion: Maneja la logica de busqueda
+        document.getElementById('search-button').addEventListener('click', function() {
+            const input = document.getElementById('search-input');
+            const searchTerm = input.value.trim().toLowerCase(); // Convertir a minúsculas
+            displayDocument(searchTerm);
+        });
+
+        function displayDocument(searchTerm) {
+            const allLinks = document.querySelectorAll('.links-container .document-link');
+            let found = false;
+            document.getElementById('no-results').style.display = 'none';
+
+            allLinks.forEach(link => {
+                const keywords = link.getAttribute('data-keywords').toLowerCase().split(',');
+                
+                // Ocultar todos por defecto para la nueva búsqueda
+                link.classList.remove('active');
+
+                // Verificar si el término de búsqueda está incluido en alguna de las palabras clave
+                const match = keywords.some(keyword => keyword.trim().includes(searchTerm));
+
+                if (match && searchTerm.length > 0) {
+                    link.classList.add('active');
+                    found = true;
+                }
+            });
+
+            if (!found && searchTerm.length > 0) {
+                document.getElementById('no-results').style.display = 'block';
+            }
+        }
+    </script>
+
+</body>
+</html>
