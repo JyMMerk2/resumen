@@ -4,161 +4,207 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Documentos Pro</title>
-    <!-- Corrección de la fuente -->
-    <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <script src="https://unpkg.com"></script>
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --bg-body: #f8fafc;
-            --bg-sidebar: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
+            --ns-purple: #4d4484; /* Color inicial estilo NetSuite */
+            --bg: #f4f4f4;
             --border: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; }
+
+        /* --- BARRA SUPERIOR ESTÁTICA --- */
+        header { 
+            background: var(--ns-purple); 
+            display: flex; 
+            align-items: center; 
+            padding: 0 20px; 
+            height: 45px; 
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: background 0.3s;
         }
 
-        body { font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; background-color: var(--bg-body); color: var(--text-main); }
-        
-        header { background: #ffffff; color: var(--primary); padding: 20px; text-align: center; border-bottom: 1px solid var(--border); font-weight: 600; font-size: 1.5rem; }
-
-        .main-container { display: flex; flex: 1; overflow: hidden; }
-
-        /* Menú Lateral */
-        nav { width: 260px; background: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 24px; }
-        
-        .menu-category {
-            width: 100%; background: var(--bg-body); border: 1px solid var(--border);
-            color: var(--text-main); padding: 12px 16px; text-align: left; font-weight: 600;
-            cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-            border-radius: 8px; transition: 0.2s;
+        .nav-item {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            cursor: pointer;
+            font-size: 0.85em;
         }
-        .menu-category:after { content: '▼'; font-size: 0.7rem; transition: 0.3s; }
-        .menu-category.active:after { transform: rotate(180deg); }
 
-        .submenu { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; list-style: none; padding: 0; margin: 0; }
-        .submenu.active { max-height: 500px; padding: 8px 0; }
-        
-        .submenu li button {
-            width: 100%; padding: 10px 12px; background: none; border: none; text-align: left;
-            cursor: pointer; color: var(--text-muted); font-size: 0.95rem; border-radius: 6px; transition: 0.2s;
+        .nav-item:hover { background: rgba(0,0,0,0.2); }
+
+        /* --- MENÚ DESPLEGABLE HOVER --- */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 45px;
+            left: 0;
+            background: white;
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+            z-index: 1001;
         }
-        .submenu li button:hover { background: #f1f5f9; color: var(--primary); padding-left: 18px; }
 
-        main { flex: 1; padding: 40px; overflow-y: auto; }
-        
-        .search-box { display: flex; gap: 12px; max-width: 600px; margin-bottom: 40px; background: white; padding: 8px; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow); }
-        #search-input { flex: 1; border: none; padding: 12px 16px; outline: none; font-size: 1rem; }
-        #search-button { padding: 12px 24px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .nav-item:hover .dropdown-content { display: block; }
 
-        .document-link { 
-            display: none; background: white; padding: 24px; border-radius: 16px; 
-            border: 1px solid var(--border); margin-bottom: 20px; box-shadow: var(--shadow);
+        .dropdown-content button {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #333;
+            font-size: 0.9em;
         }
-        .document-link.active { display: block; animation: slideIn 0.4s ease-out; }
-        
-        .doc-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; color: var(--text-main); }
-        
-        .btn-group { display: flex; align-items: center; gap: 15px; }
-        .btn { padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; text-decoration: none; cursor: pointer; border: none; transition: 0.2s; }
-        .btn-primary { background: #eff6ff; color: var(--primary); }
-        .btn-primary:hover { background: var(--primary); color: white; }
-        .btn-success { background: #f0fdf4; color: #16a34a; }
-        .btn-success:hover { background: #16a34a; color: white; }
-        .link-text { color: var(--text-muted); font-size: 0.85rem; text-decoration: none; }
 
-        #no-results { display: none; color: #ef4444; margin-top: -20px; margin-bottom: 20px; font-weight: 600; }
+        .dropdown-content button:hover { background: #f1f5f9; }
 
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* --- CONFIGURACIÓN DE COLOR --- */
+        .color-picker-container {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8em;
+        }
+
+        #colorPicker {
+            cursor: pointer;
+            border: 2px solid white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            background: none;
+        }
+
+        /* Contenido Principal */
+        main { flex: 1; padding: 30px; overflow-y: auto; }
+        .search-container { max-width: 800px; margin: 0 auto; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 30px; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        #search-input { flex: 1; border: none; outline: none; font-size: 1em; }
+        #search-button { padding: 10px 25px; background: var(--ns-purple); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: background 0.3s; }
+
+        .document-link { display: none; background: #fff; padding: 20px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 15px; }
+        .document-link.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <header>Sistema de Gestión de Documentos</header>
+    <header id="mainHeader">
+        <div style="font-weight: bold; margin-right: 30px; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="layout-grid" size="18"></i> SISTEMA PRO
+        </div>
 
-    <div class="main-container">
-        <nav>
-            <button class="menu-category" onclick="toggleMenu(this)">📂 Categorías</button>
-            <ul class="submenu" id="catMenu">
-                <li><button onclick="menuFilter('ahorro')">💰 Ahorros</button></li>
-                <li><button onclick="menuFilter('resumen')">📊 Resúmenes</button></li>
-                <li><button onclick="menuFilter('familia')">🏠 Familia</button></li>
-                <hr style="border: 0; border-top: 1px solid var(--border); margin: 8px 0;">
-                <li><button onclick="location.reload()">🔄 Mostrar Todo</button></li>
-            </ul>
-        </nav>
+        <div class="nav-item">
+            Categorías <i data-lucide="chevron-down" size="14" style="margin-left:5px"></i>
+            <div class="dropdown-content">
+                <button onclick="menuFilter('ahorro')"><i data-lucide="piggy-bank" size="16"></i> Ahorros</button>
+                <button onclick="menuFilter('resumen')"><i data-lucide="bar-chart-3" size="16"></i> Resúmenes</button>
+                <button onclick="menuFilter('familia')"><i data-lucide="home" size="16"></i> Familia</button>
+                <hr style="margin: 5px 0; border: 0; border-top: 1px solid #eee;">
+                <button onclick="location.reload()"><i data-lucide="refresh-cw" size="16"></i> Mostrar Todo</button>
+            </div>
+        </div>
 
-        <main>
+        <div class="nav-item">Actividades</div>
+        <div class="nav-item">Documentos</div>
+
+        <!-- SELECTOR DE COLOR -->
+        <div class="color-picker-container">
+            <i data-lucide="palette" size="16"></i>
+            <input type="color" id="colorPicker" value="#4d4484" title="Cambiar color del sistema">
+        </div>
+    </header>
+
+    <main>
+        <div class="search-container">
             <div class="search-box">
-                <input type="text" id="search-input" placeholder="¿Qué documento buscas?">
+                <input type="text" id="search-input" placeholder="Buscar por palabra clave...">
                 <button id="search-button">Buscar</button>
             </div>
-            <p id="no-results">No se encontraron documentos.</p>
+            
+            <div id="docs">
+                <!-- DOCUMENTO EJEMPLO -->
+                <div class="document-link" data-keywords="resumen, ahorro">
+                    <p style="margin:0 0 15px 0; font-weight: bold; font-size: 1.1em; color: #333;">📄 Resumen de Ahorros 2026</p>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <button class="btn-action" onclick="openModal('https://docs.google.com/spreadsheets/d/e/2PACX-1vSmB-jPw1LnINnl3-LqJwET8yWZBDdqkCTO9b7XTixQuuVW0uc245xPI6n05FIATtWDcx6XsM9SmaTV/pubhtml?gid=0&single=true&chrome=false&widget=false&headers=false')" 
+                                style="cursor:pointer; padding: 8px 15px; border-radius: 5px; border: 1px solid #ddd; background: #fff; display:flex; align-items:center; gap:5px; font-weight: 600;">
+                            <i data-lucide="eye" size="16"></i> Vista Rápida
+                        </button>
+                        
+                        <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSmB-jPw1LnINnl3-LqJwET8yWZBDdqkCTO9b7XTixQuuVW0uc245xPI6n05FIATtWDcx6XsM9SmaTV/pubhtml?gid=0&single=true&chrome=false&widget=false&headers=false" 
+                           target="_blank" style="text-decoration:none; color:#666; font-size:0.85em;">↗️ Pantalla Completa</a>
 
-            <div class="links-container">
-                <div class="document-link" data-keywords="resumen, ahorro, presupuesto, familia">
-                    <div class="doc-title">📄 Documento de Resumen de Ahorros</div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="openModal('https://docs.google.com/spreadsheets/d/e/2PACX-1vSmB-jPw1LnINnl3-LqJwET8yWZBDdqkCTO9b7XTixQuuVW0uc245xPI6n05FIATtWDcx6XsM9SmaTV/pubhtml?gid=0&single=true&chrome=false&widget=false&headers=false')">👁️ Vista Rápida</button>
-                        <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSmB-jPw1LnINnl3-LqJwET8yWZBDdqkCTO9b7XTixQuuVW0uc245xPI6n05FIATtWDcx6XsM9SmaTV/pubhtml?gid=0&single=true&chrome=false&widget=false&headers=false" target="_blank" class="link-text">↗️ Abrir aparte</a>
-                        <a href="https://docs.google.com/spreadsheets/d/1VVEa0ywxOHrF9d35EH5I2rpuoRLYwogS9eAbGVL8pbg/edit" target="_blank" class="btn btn-success">✏️ Editar</a>
+                        <a href="https://docs.google.com/spreadsheets/d/1VVEa0ywxOHrF9d35EH5I2rpuoRLYwogS9eAbGVL8pbg/edit?gid=0#gid=0" 
+                           target="_blank" style="margin-left:auto; text-decoration:none; color:white; background:#28a745; padding:8px 18px; border-radius:5px; font-weight:bold; font-size:0.9em;">✏️ Editar</a>
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
 
-    <!-- Modal Flotante -->
-    <div id="documentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
-        <div style="background:white; width:95%; height:90%; position:relative; border-radius:12px; overflow:hidden;">
-            <button onclick="closeModal()" style="position:absolute; top:15px; right:15px; padding:10px 20px; cursor:pointer; background:#ef4444; color:white; border:none; border-radius:8px; z-index:1001; font-weight:bold;">Cerrar</button>
+    <!-- MODAL -->
+    <div id="documentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000; justify-content:center; align-items:center;">
+        <div style="background:white; width:95%; height:90%; position:relative; border-radius:10px; overflow:hidden;">
+            <button onclick="closeModal()" style="position:absolute; top:15px; right:15px; padding:10px 20px; background:#ef4444; color:white; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">Cerrar</button>
             <iframe id="modalIframe" src="" style="width:100%; height:100%; border:none;"></iframe>
         </div>
     </div>
 
     <script>
-        const searchInput = document.getElementById('search-input');
-        const searchButton = document.getElementById('search-button');
+        lucide.createIcons();
 
-        // Lógica del Menú Desplegable
-        function toggleMenu(button) {
-            button.classList.toggle("active");
-            document.getElementById("catMenu").classList.toggle("active");
-        }
+        // FUNCIÓN CAMBIAR COLOR
+        const colorPicker = document.getElementById('colorPicker');
+        const header = document.getElementById('mainHeader');
+        const searchBtn = document.getElementById('search-button');
 
-        // Lógica de Búsqueda
-        function displayDocument(searchTerm) {
-            const allLinks = document.querySelectorAll('.document-link');
-            let found = false;
-            document.getElementById('no-results').style.display = 'none';
+        colorPicker.addEventListener('input', (e) => {
+            const newColor = e.target.value;
+            header.style.backgroundColor = newColor;
+            searchBtn.style.backgroundColor = newColor;
+        });
 
-            allLinks.forEach(link => {
-                const keywords = link.getAttribute('data-keywords').toLowerCase();
-                link.classList.remove('active');
-                if (searchTerm.length > 0 && keywords.includes(searchTerm.toLowerCase())) {
-                    link.classList.add('active');
-                    found = true;
-                }
+        // BÚSQUEDA Y FILTROS
+        function displayDocument(term) {
+            const all = document.querySelectorAll('.document-link');
+            all.forEach(d => {
+                const keys = d.getAttribute('data-keywords').toLowerCase();
+                d.classList.toggle('active', term && keys.includes(term.toLowerCase()));
             });
-            if (!found && searchTerm.length > 0) document.getElementById('no-results').style.display = 'block';
         }
 
-        function menuFilter(term) {
-            searchInput.value = term;
-            displayDocument(term);
+        function menuFilter(term) { 
+            document.getElementById('search-input').value = term; 
+            displayDocument(term); 
         }
 
-        searchButton.addEventListener('click', () => displayDocument(searchInput.value.trim()));
-        searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') displayDocument(searchInput.value.trim()); });
+        document.getElementById('search-button').addEventListener('click', () => {
+            displayDocument(document.getElementById('search-input').value);
+        });
 
-        // Lógica del Modal
-        function openModal(url) {
-            document.getElementById('modalIframe').src = url;
-            document.getElementById('documentModal').style.display = 'flex';
+        // MODAL
+        function openModal(url) { 
+            document.getElementById('modalIframe').src = url; 
+            document.getElementById('documentModal').style.display = 'flex'; 
         }
-        function closeModal() {
-            document.getElementById('modalIframe').src = "";
-            document.getElementById('documentModal').style.display = 'none';
+        function closeModal() { 
+            document.getElementById('modalIframe').src = ""; 
+            document.getElementById('documentModal').style.display = 'none'; 
         }
     </script>
 </body>
