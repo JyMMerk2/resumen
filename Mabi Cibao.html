@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mabi Cibao | Control de Operaciones</title>
+    <script src="https://unpkg.com"></script>
+    <style>
+        :root {
+            --mabi-amber: #d97706; /* Color miel/mabí */
+            --mabi-dark: #451a03;
+            --bg: #fffcf2;
+            --card: #ffffff;
+            --border: #e7e5e4;
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; background: var(--bg); color: #292524;
+            display: flex; flex-direction: column; height: 100vh; 
+        }
+
+        /* --- HEADER CORPORATIVO --- */
+        header { 
+            background: var(--mabi-dark); 
+            display: flex; align-items: center; 
+            padding: 0 25px; height: 60px; color: #fef3c7;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .brand { font-weight: 800; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; letter-spacing: 1px; }
+        .brand span { color: var(--mabi-amber); font-size: 0.8rem; border-left: 1px solid #78350f; padding-left: 10px; margin-left: 5px; }
+
+        .nav-item {
+            height: 100%; display: flex; align-items: center;
+            padding: 0 20px; cursor: pointer; font-size: 0.9rem; font-weight: 500;
+            transition: all 0.3s;
+        }
+        .nav-item:hover { background: rgba(217, 119, 6, 0.2); color: var(--mabi-amber); }
+
+        /* --- DASHBOARD ESTRATÉGICO --- */
+        main { flex: 1; padding: 30px; overflow-y: auto; }
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        /* KPI rápido: Meta 100 Huacales */
+        .goal-banner {
+            background: linear-gradient(90deg, #78350f 0%, #d97706 100%);
+            color: white; border-radius: 15px; padding: 20px; margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* --- GRID DE ACTIVOS --- */
+        .assets-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+            gap: 20px; 
+        }
+
+        .asset-card { 
+            background: var(--card); border-radius: 12px; border: 1px solid var(--border);
+            padding: 24px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        .asset-card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px rgba(0,0,0,0.08); border-color: var(--mabi-amber); }
+
+        .asset-header { display: flex; align-items: center; gap: 12px; }
+        .icon-box { background: #fff7ed; color: var(--mabi-amber); padding: 10px; border-radius: 10px; }
+        
+        .asset-title { font-weight: 700; font-size: 1.1rem; color: var(--mabi-dark); margin: 0; }
+        .asset-desc { font-size: 0.85rem; color: #78716c; line-height: 1.4; }
+
+        .button-group { display: flex; gap: 10px; margin-top: auto; padding-top: 15px; border-top: 1px dashed var(--border); }
+
+        .btn {
+            flex: 1; padding: 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+            transition: 0.2s; border: 1px solid var(--border); text-decoration: none;
+        }
+        .btn-view { background: #fdfaf7; color: var(--mabi-dark); }
+        .btn-view:hover { background: #f5f5f4; }
+        .btn-edit { background: var(--mabi-amber); color: white; border: none; }
+        .btn-edit:hover { background: #b45309; }
+
+        /* MODAL */
+        #viewer { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:2000; padding:20px; }
+        .viewer-content { background:white; width:100%; height:100%; border-radius:15px; overflow:hidden; position:relative; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <i data-lucide="wine"></i> MABÍ CIBAO <span>M&M EMPRENDIMIENTO</span>
+        </div>
+        <div style="flex:1"></div>
+        <div class="nav-item"><i data-lucide="layout-dashboard" size="18" style="margin-right:8px"></i> Dashboard</div>
+        <div class="nav-item"><i data-lucide="truck" size="18" style="margin-right:8px"></i> Logística</div>
+        <input type="color" id="themeColor" value="#d97706" style="margin-left:20px; cursor:pointer">
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Meta del Trimestre -->
+            <div class="goal-banner">
+                <div>
+                    <h2 style="margin:0; font-size: 1.5rem;">Meta: 100 Huacales/Semana</h2>
+                    <p style="margin:5px 0 0 0; opacity:0.9">Primer Trimestre - Seguimiento de Producción y Ganancias</p>
+                </div>
+                <div style="text-align:right">
+                    <div style="font-size: 0.8rem; text-transform:uppercase; font-weight:bold">Estatus Socios</div>
+                    <div style="display:flex; gap:10px; margin-top:5px">
+                        <span title="Socio M" style="background:#fff; color:#78350f; padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:900">M</span>
+                        <span title="Socio M" style="background:#fff; color:#78350f; padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:900">M</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="assets-grid" id="assets-container">
+                <!-- Se carga vía JS -->
+            </div>
+        </div>
+    </main>
+
+    <div id="viewer">
+        <div class="viewer-content">
+            <button onclick="closeViewer()" style="position:absolute; top:10px; right:10px; z-index:10; padding:8px 16px; background:#ef4444; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold">Cerrar</button>
+            <iframe id="iframe" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Configura aquí los enlaces de tus Google Sheets
+        const ASSETS = [
+            {
+                title: "Calculadora de Producción",
+                desc: "Costos de materia prima, azúcar, botellas y fermentación por lote.",
+                icon: "beaker",
+                view: "https://docs.google.com",
+                edit: "https://docs.google.com"
+            },
+            {
+                title: "Control de Ventas y Huacales",
+                desc: "Seguimiento semanal para alcanzar la meta de los 100 huacales.",
+                icon: "trending-up",
+                view: "https://docs.google.com",
+                edit: "https://docs.google.com"
+            },
+            {
+                title: "Ganancias y Activos",
+                desc: "Balance de ingresos, egresos y activos fijos de M&M.",
+                icon: "dollar-sign",
+                view: "https://docs.google.com",
+                edit: "https://docs.google.com"
+            },
+            {
+                title: "Inventario de Insumos",
+                desc: "Stock de envases, etiquetas y tapones.",
+                icon: "clipboard-list",
+                view: "https://docs.google.com",
+                edit: "https://docs.google.com"
+            }
+        ];
+
+        function renderAssets() {
+            const container = document.getElementById('assets-container');
+            container.innerHTML = ASSETS.map(asset => `
+                <div class="asset-card">
+                    <div class="asset-header">
+                        <div class="icon-box"><i data-lucide="${asset.icon}"></i></div>
+                        <h3 class="asset-title">${asset.title}</h3>
+                    </div>
+                    <p class="asset-desc">${asset.desc}</p>
+                    <div class="button-group">
+                        <button class="btn btn-view" onclick="openViewer('${asset.view}')">
+                            <i data-lucide="eye" size="16"></i> Ver
+                        </button>
+                        <a href="${asset.edit}" target="_blank" class="btn btn-edit">
+                            <i data-lucide="edit-3" size="16"></i> Editar
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function openViewer(url) {
+            document.getElementById('iframe').src = url;
+            document.getElementById('viewer').style.display = 'block';
+        }
+
+        function closeViewer() {
+            document.getElementById('viewer').style.display = 'none';
+            document.getElementById('iframe').src = '';
+        }
+
+        document.getElementById('themeColor').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--mabi-amber', e.target.value);
+        });
+
+        renderAssets();
+    </script>
+</body>
+</html>
