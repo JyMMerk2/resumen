@@ -3,91 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscador de Documentos</title>
+    <title>Buscador y Menú de Documentos</title>
     <style>
-        /* Estilos basicos para la pagina y los enlaces */
-        body {
-            font-family: sans-serif;
-            padding: 20px;
-        }
-        .document-link {
-            display: none; /* Oculta todos los enlaces por defecto */
-            margin-top: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            background-color: #f9f9f9;
-        }
-        .document-link.active {
-            display: block; /* Muestra solo el enlace con la clase 'active' */
-        }
-        .document-link a {
-            font-size: 18px;
-            text-decoration: none;
-            color: #0066cc;
-        }
-        #search-input {
-            padding: 10px;
-            width: 250px;
-            font-size: 16px;
-        }
-        #search-button {
-            padding: 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        #no-results {
-            display: none;
-            margin-top: 10px;
-            color: red;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        
+        /* Barra Superior */
+        header { background: #004a99; color: white; padding: 15px 20px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        /* Contenedor Principal */
+        .main-container { display: flex; flex: 1; overflow: hidden; }
+
+        /* Menú Lateral */
+        nav { width: 200px; background: #f4f4f4; border-right: 1px solid #ddd; padding: 20px; }
+        nav h3 { font-size: 1.1em; color: #333; }
+        nav ul { list-style: none; padding: 0; }
+        nav ul li { margin-bottom: 10px; }
+        nav ul li button { width: 100%; text-align: left; padding: 8px; cursor: pointer; border: none; background: white; border-radius: 4px; transition: 0.3s; }
+        nav ul li button:hover { background: #0066cc; color: white; }
+
+        /* Área de Contenido */
+        main { flex: 1; padding: 30px; overflow-y: auto; }
+        
+        .search-box { margin-bottom: 25px; }
+        #search-input { padding: 12px; width: 300px; border: 1px solid #ccc; border-radius: 4px; }
+        #search-button { padding: 12px 20px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer; }
+
+        /* Tarjetas de Documentos */
+        .document-link { display: none; margin-top: 15px; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .document-link.active { display: block; animation: fadeIn 0.4s; }
+        .document-link a { font-weight: bold; text-decoration: none; color: #0066cc; font-size: 1.1em; }
+        
+        #no-results { display: none; color: #d9534f; font-weight: bold; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <h1>Buscador de Documentos</h1>
-    <input type="text" id="search-input" placeholder="Escribe el nombre (ej. Ahorro)">
-    <button id="search-button">Buscar</button>
-    <p id="no-results">No se encontró ningún documento con ese nombre.</p>
+    <header>
+        <h1>Sistema de Gestión de Documentos</h1>
+    </header>
 
-    <div class="links-container">
-        <!-- Define tus documentos aquí usando un atributo data-keywords -->
-        <!-- El ID es solo para referencia interna del código -->
-        
-        <div id="DocAhorro" class="document-link" data-keywords="resumen,ahorro,presupuesto,familia">
-            <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSmB-jPw1LnINnl3-LqJwET8yWZBDdqkCTO9b7XTixQuuVW0uc245xPI6n05FIATtWDcx6XsM9SmaTV/pubhtml?gid=0&single=true" target="_blank">Documento de Resumen de Ahorros</a>
-        </div>
+    <div class="main-container">
+        <!-- MENÚ LATERAL -->
+        <nav>
+            <h3>Categorías</h3>
+            <ul>
+                <li><button onclick="menuFilter('ahorro')">💰 Ahorros</button></li>
+                <li><button onclick="menuFilter('resumen')">📊 Resúmenes</button></li>
+                <li><button onclick="menuFilter('familia')">🏠 Familia</button></li>
+                <li><button onclick="location.reload()" style="background: #eee;">🔄 Mostrar Todo</button></li>
+            </ul>
+        </nav>
 
-        <!-- Puedes añadir más documentos con sus propias palabras clave aquí -->
-        <!--
-        <div id="OtroDoc" class="document-link" data-keywords="factura,enero,2025">
-             <a href="https://enlace.a.otro.documento.com" target="_blank">Factura de Enero 2025</a>
-        </div>
-        -->
+        <!-- CONTENIDO PRINCIPAL -->
+        <main>
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Buscar por palabra clave...">
+                <button id="search-button">Buscar</button>
+                <p id="no-results">No se encontró ningún documento.</p>
+            </div>
+
+            <div class="links-container">
+                <div class="document-link" data-keywords="resumen,ahorro,presupuesto,familia">
+                    <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSmB-jPw1LnINnl3-LqJwET8yWZBDdqkCTO9b7XTixQuuVW0uc245xPI6n05FIATtWDcx6XsM9SmaTV/pubhtml?gid=0&single=true" target="_blank">
+                        📄 Documento de Resumen de Ahorros
+                    </a>
+                    <p style="color: #666; font-size: 0.9em; margin-top: 5px;">Palabras clave: ahorro, presupuesto, familia.</p>
+                </div>
+
+                <!-- Ejemplo de otro documento -->
+                <div class="document-link" data-keywords="factura,enero,luz">
+                    <a href="#">📑 Factura de Luz - Enero</a>
+                </div>
+            </div>
+        </main>
     </div>
 
     <script>
-        // JavaScript seccion: Maneja la logica de busqueda
-        document.getElementById('search-button').addEventListener('click', function() {
-            const input = document.getElementById('search-input');
-            const searchTerm = input.value.trim().toLowerCase(); // Convertir a minúsculas
-            displayDocument(searchTerm);
-        });
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
 
+        // Función principal de búsqueda
         function displayDocument(searchTerm) {
-            const allLinks = document.querySelectorAll('.links-container .document-link');
+            const allLinks = document.querySelectorAll('.document-link');
             let found = false;
             document.getElementById('no-results').style.display = 'none';
 
             allLinks.forEach(link => {
-                const keywords = link.getAttribute('data-keywords').toLowerCase().split(',');
-                
-                // Ocultar todos por defecto para la nueva búsqueda
+                const keywords = link.getAttribute('data-keywords').toLowerCase();
                 link.classList.remove('active');
 
-                // Verificar si el término de búsqueda está incluido en alguna de las palabras clave
-                const match = keywords.some(keyword => keyword.trim().includes(searchTerm));
-
-                if (match && searchTerm.length > 0) {
+                if (searchTerm.length > 0 && keywords.includes(searchTerm.toLowerCase())) {
                     link.classList.add('active');
                     found = true;
                 }
@@ -97,6 +104,19 @@
                 document.getElementById('no-results').style.display = 'block';
             }
         }
+
+        // Función para los botones del menú
+        function menuFilter(term) {
+            searchInput.value = term;
+            displayDocument(term);
+        }
+
+        searchButton.addEventListener('click', () => displayDocument(searchInput.value.trim()));
+        
+        // Buscar también al presionar "Enter"
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') displayDocument(searchInput.value.trim());
+        });
     </script>
 
 </body>
